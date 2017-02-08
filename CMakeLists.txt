@@ -16,7 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 include(ExternalProject)
 ExternalProject_add(zlab_drone
-    GIT_REPOSITORY https://bitbucket.org/sharan_duggirala/zlab_drone 
+    GIT_REPOSITORY https://github.com/sd12832/zlab_drone
+    GIT_TAG d7ae5cbb79d9a2855d15623abb20ced61badab08  
     PREFIX ${CATKIN_DEVEL_PREFIX}
     CONFIGURE_COMMAND echo "No configure"
     BUILD_COMMAND make 
