@@ -28,7 +28,7 @@ class Tracker {
 
     public:
     bool freshStart;
-    Mat_<float> rigidTransform;
+    Mat_<float> rigidTransform = cv::Mat::eye(3,3,CV_32FC1);
 
     Tracker():it_(nh1_) { 
 	image_sub_ = it_.subscribe("/ardrone/bottom/image_raw", 1, 
@@ -47,10 +47,14 @@ class Tracker {
 	// ROS declarations 
 	cv_bridge::CvImagePtr cv_ptr;
 	
-	// Function Initializations
-        if (freshStart == true) {
-	    cv::Mat rightTransform = cv::Mat::eye(3,3,CV_32FC1);
-        }
+	// Function Initializations 
+	/*
+    if (freshStart == true) {
+	   rigidTransform = cv::Mat::eye(3,3,CV_32FC1);
+    }
+
+    */
+
 	cv::Mat gray; 
 	cv::Mat copy_img;
 	vector<cv::Point2f> corners;
