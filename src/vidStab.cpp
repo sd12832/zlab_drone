@@ -76,6 +76,8 @@ class Tracker {
 	    }
 	}
 
+	int m = 4; 
+
 	if (!prevGray.empty()) {
 
 	   vector<uchar> status;

@@ -14,6 +14,17 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
 )
 
+include(ExternalProject)
+ExternalProject_add(zlab_drone
+    GIT_REPOSITORY https://github.com/sd12832/zlab_drone
+    GIT_TAG d7ae5cbb79d9a2855d15623abb20ced61badab08  
+    PREFIX ${CATKIN_DEVEL_PREFIX}
+    CONFIGURE_COMMAND echo "No configure"
+    BUILD_COMMAND make 
+    INSTALL_COMMAND make install INSTALL_PREFIX=${CATKIN_DEVEL_PREFIX}/lib/zlab_drone
+    BUILD_IN_SOURCE 1
+)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
