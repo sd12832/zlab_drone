@@ -28,7 +28,7 @@ class Tracker {
 
     public:
     bool freshStart;
-    Mat_<float> rigidTransform = cv::Mat::eye(3,3,CV_32FC1);
+    Mat_<float> rigidTransform;
 
     Tracker():it_(nh1_) { 
 	image_sub_ = it_.subscribe("/ardrone/bottom/image_raw", 1, 
@@ -48,13 +48,12 @@ class Tracker {
 	cv_bridge::CvImagePtr cv_ptr;
 	
 	// Function Initializations 
-	/*
-    if (freshStart == true) {
-	   rigidTransform = cv::Mat::eye(3,3,CV_32FC1);
-    }
 
-    */
+    	if (freshStart == true) {
+    	   rigidTransform = cv::Mat::eye(3,3,CV_32FC1);
+    	}
 
+    	
 	cv::Mat gray; 
 	cv::Mat copy_img;
 	vector<cv::Point2f> corners;
@@ -71,17 +70,16 @@ class Tracker {
 	copy_img = cv_ptr->image;
 	cv::cvtColor(cv_ptr->image, gray, cv::COLOR_BGR2GRAY);
 	
-	if (trackedFeatures.size() < 200) {
+	if (trackedFeatures.size() < 100000) {
 	    cv::goodFeaturesToTrack(gray,corners,200,0.01,10);
 	    //Debugging
 	    //cout << "found" << corners.size() << "features\n";
 	    for (int i = 0; i < corners.size(); ++i) {
-		trackedFeatures.push_back(corners[i]);
+		    trackedFeatures.push_back(corners[i]);
 	    }
 	}
 
-	int m = 4; 
-
+	
 	if (!prevGray.empty()) {
 
 	   vector<uchar> status;
@@ -90,6 +88,7 @@ class Tracker {
 	   calcOpticalFlowPyrLK(prevGray, gray, trackedFeatures, corners,
 				status, errors, Size(10,10));
 
+	   
 	   if (countNonZero(status) < status.size() * 0.8) {
 		cout << "cataclysmic error\n";
 		rigidTransform = cv::Mat::eye(3,3,CV_32FC1);
@@ -97,21 +96,19 @@ class Tracker {
 		prevGray.release();
 		freshStart = true;
 		return;
-	   }
-	   else { freshStart = false; }
+	   } else { freshStart = false; }
 
-	   cv::Mat_<float> newRigidTransform = estimateRigidTransform(trackedFeatures, 
-							corners, false);
+	   cv::Mat_<float> newRigidTransform = 
+		estimateRigidTransform(trackedFeatures, corners, false);
 	   cv::Mat_<float> nrt33 = cv::Mat_<float>::eye(3,3);
 	   newRigidTransform.copyTo(nrt33.rowRange(0,2));
 	   rigidTransform *= nrt33;
-
 	   trackedFeatures.clear();
 	   for (int i = 0; i < status.size(); ++i) {
-		if (status[i]) {
-		    trackedFeatures.push_back(corners[i]);
-		}
-	   }
+		    if (status[i]) {
+		        trackedFeatures.push_back(corners[i]);
+		    }
+	    }
 	}
 
 	// Debugging to see the tracked features as of now
@@ -119,15 +116,21 @@ class Tracker {
 	    circle(cv_ptr->image, trackedFeatures[i], 3, Scalar(0,0,255), 
 			CV_FILLED);
 	}
-	imshow(OPENCV_WINDOW, cv_ptr->image); 
-	cv::waitKey(3);
+
+	
+	//imshow(OPENCV_WINDOW, cv_ptr->image); 
+	//cv::waitKey(3);
 
 	gray.copyTo(prevGray);
-
+        
+	if (!prevGray.empty()) { 
+	    imshow(OPENCV_WINDOW, prevGray); 
+	    cv::waitKey(3);
+	}
+	
 	Mat invTrans = rigidTransform.inv(DECOMP_SVD);
 	warpAffine(cv_ptr->image, orig_warped, invTrans.rowRange(0,2), 
 			Size());
-
 
 	// Publishing (Only uncomment, if you're sure nothing is broken
 	// in this section)
