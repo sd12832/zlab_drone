@@ -4,4 +4,6 @@ Header header
 
 # The state of Landing and Takeoff
 
-uint8[] state
+uint8 takeoff
+uint8 landing
+uint8 move

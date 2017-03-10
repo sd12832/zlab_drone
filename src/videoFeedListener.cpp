@@ -71,7 +71,7 @@ public:
 
     // Advertisng the Circles being detected from this 
     /*circle_pub_ = 
-    nh_.advertise< std::vector < std::vector < float > > >("/circles", 1);*/ 
+    nh_.advertise<zlab_drone::Circles>("/circles", 1);*/ 
 
 	/* 
     // Publish the organized circles topic

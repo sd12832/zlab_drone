@@ -46,3 +46,12 @@ target_link_libraries(vdstab ${catkin_LIBRARIES})
 
 add_executable(fly src/fly_from_joy.cpp)
 target_link_libraries(fly ${catkin_LIBRARIES})
+
+add_executable(demo_input src/demo_usr_input.cpp)
+target_link_libraries(demo_input ${catkin_LIBRARIES})
+
+add_executable(emer_land src/emergency_land.cpp)
+target_link_libraries(emer_land ${catkin_LIBRARIES})
+
+add_executable(main_demo src/main_demo.cpp)
+target_link_libraries(main_demo ${catkin_LIBRARIES})
