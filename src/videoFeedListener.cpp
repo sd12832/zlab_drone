@@ -7,6 +7,7 @@
 #include <vector>
 #include <zlab_drone/Circles.h>
 #include <zlab_drone/Circle.h>
+#include <std_msgs/Bool.h>
 
 using namespace std;
 using std::string;
@@ -16,6 +17,7 @@ namespace cv
 } 
 
 static const std::string OPENCV_WINDOW1 = "Image window";
+std_msgs::Bool circlebool_out; 
 
 string type2str(int type) {
   string r;
@@ -47,6 +49,7 @@ class ImageConverter {
   image_transport::Subscriber image_sub_;
   image_transport::Publisher image_pub_;
   ros::Publisher circle_pub_;
+  ros::Publisher pub_circlebool; 
   /*
   ros::Publisher<zlab_drone::Circle> circles_out1;
   ros::Publisher<zlab_drone::Circle> circles_out2;
@@ -61,6 +64,8 @@ public:
     // Subscribe to the Bottom Raw Image
     image_sub_ = it_.subscribe("/ardrone/bottom/image_raw", 1, 
 				&ImageConverter::imageCb, this);
+
+    pub_circlebool = nh_.advertise<std_msgs::Bool>("/demo_circle", 1);
 
     // Stabilizer Image Subscription  
     /*image_sub_ = it_.subscribe("/stabImage", 1, &ImageConverter::imageCb, 
@@ -188,13 +193,24 @@ public:
     
     // Code Loop to draw the Circles on the image. [Old Method]
 
+    cv::rectangle(cv_ptr->image, cv::Point(200,180), cv::Point(440,60), 
+                                  cv::Scalar(0,0,255));
+
     for (size_t i = 0; i < circles.size(); i++) {
 
-        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-        int radius = cvRound(circles[i][2]);
-        cv::circle(cv_ptr->image, center, 3, cv::Scalar(0, 255, 0), -1, 8, 0);
-        cv::circle(cv_ptr->image, center, radius+1, cv::Scalar(0, 0, 255), 
-						8, 0);
+      double x = circles[i][0];
+      double y = circles[i][1];
+
+        if (((x < 440) && (x > 200)) && ((y < 180) && (y > 60))) {
+
+          cv::Point center(cvRound(x), cvRound(y));
+          int radius = cvRound(circles[i][2]);
+          cv::circle(cv_ptr->image, center, 3, cv::Scalar(0, 255, 0), -1, 8, 0);
+          cv::circle(cv_ptr->image, center, radius+1, cv::Scalar(0, 0, 255), 
+  						                                                          8, 0);
+          circlebool_out.data = true; 
+          pub_circlebool.publish(circlebool_out);
+        }
 
     }
 
@@ -224,6 +240,8 @@ public:
     //-------------------------------------------------------------------------    
 
     // Sort out the Circles to find the 3 closest ones
+
+    /*
 	
     int center_x;
     int center_y;
@@ -250,11 +268,13 @@ public:
     }
 	 
     std::sort(euclidian_distance.begin(), euclidian_distance.end());
-	
+	*/
+
 	//Debugging 
 	/*printf("No. of circles detected = %d", euclidian_distance.size());
 	printf("----------------------------\nNew Stack\n\n");*/
 
+  /*
 	int cnt; 
 
 	
@@ -273,6 +293,7 @@ public:
 			stack[dim1][dim2] = euclidian_distance[dim1][dim2];
 		}
 	}
+  */
 
     //------------------------------------------------------------------------- 
    

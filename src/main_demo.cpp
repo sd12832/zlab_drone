@@ -19,6 +19,7 @@ bool emr_land = false;
 bool circle = false; 
 int new_msg = 0; 
 int nCommand = 0; 
+bool repeatmove = false; 
 
 //Ros Message Intializations
 std_msgs::Bool emr_in; 
@@ -124,13 +125,22 @@ int main(int argc, char** argv) {
 
 	    	} else if (circle == true) {
 
-	    		// Wait Here
-	    		std::cout << "Detected Circle" << std::endl; 
-	    		std::cout << "Now Sleeping for 30 seconds" << std::endl;
-	    		ros::Duration(30).sleep();
+	    		if (repeatmove == false) {
 
-	    		// Change back the variable 
-	    		circle = false; 
+		    		// Wait Here
+		    		std::cout << "Detected Circle" << std::endl; 
+		    		std::cout << "Now Sleeping for 30 seconds" << std::endl;
+		    		ros::Duration(30).sleep();
+
+		    		// Change back the variable 
+		    		circle = false; 
+
+		    		repeatmove = true; 
+
+	    		} else {
+	    			// Do nothing 
+	    		}
+
 
 	    	} else {
 
@@ -208,7 +218,7 @@ int main(int argc, char** argv) {
 	    			tak_land_out.landing = (uint8_t)0;
 	    			tak_land_out.move = (uint8_t)1;
 
-				    twist_msg_out.linear.x = 0.25;
+				    twist_msg_out.linear.x = 0.0001;
 	    			twist_msg_out.linear.y = 0;
 				    twist_msg_out.linear.z = 0;
 				    twist_msg_out.angular.x = 0;
@@ -261,6 +271,9 @@ int main(int argc, char** argv) {
 	    		} else {
 	    			std::cout << "You shouldn't be here." << std::endl; 
 	    		}
+
+	    		// Make repeat move what it was again
+	    		repeatmove = false; 
 
 	    		// Initialize nCommand
 	    		nCommand = 0; 

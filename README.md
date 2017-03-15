@@ -8,3 +8,7 @@
 ### Who do I talk to? ###
 
 * Sharan Duggirala (sd12832@my.bristol.ac.uk)
+
+### Note ###
+
+Really need to Refactor the code and release the first demo version. 
