@@ -28,6 +28,7 @@ std_msgs::String command_in;
 zlab_drone::Tak_land tak_land_out;
 sensor_msgs::Joy joy_out;  
 geometry_msgs::Twist twist_msg_out; 
+std_msgs::Empty emp_msg; 
 
 // Callback Functions 
 void emr_callback(const std_msgs::Bool& emr_in) {
@@ -71,7 +72,13 @@ void command_callback(const std_msgs::String& command_in) {
 	} else if (command == "MR") {
 		nCommand = 5; 
 	} else if (command == "ML") {
-		nCommand = 6; 
+		nCommand = 6;
+    } else if (command == "R") {
+        nCommand = 8; 
+        //Debugging 
+        std::cout << "Reset Recognised" << std::endl;
+    } else if (command == "H") {
+        nCommand = 9;  
 	} else {
 		std::cout << "Unknown command. Please try again." << std::endl;
 		nCommand = 7; 
@@ -95,13 +102,15 @@ int main(int argc, char** argv) {
     ros::Publisher pub_twist;
     ros::Subscriber emrLand_sub;
     ros::Subscriber circle_sub; 
-    ros::Subscriber command_sub;    
+    ros::Subscriber command_sub;
+    ros::Publisher pub_reset;    
 
     pub_tak_land = node.advertise<zlab_drone::Tak_land>("/tak_land", 1);
     pub_twist = node.advertise<geometry_msgs::Twist>("/twist", 1);
     emrLand_sub = node.subscribe("emr_land", 1, emr_callback);
     circle_sub = node.subscribe("/demo_circle", 1, circle_callback);
     command_sub = node.subscribe("/command", 1, command_callback);
+    pub_reset = node.advertise<std_msgs::Empty>("/ardrone/reset", 1);
 
     while (ros::ok()) {
     	if (!new_msg) {
@@ -146,7 +155,35 @@ int main(int argc, char** argv) {
 
 
 	    		// Handle the various commands
-	    		if (nCommand == 7) {
+                if (nCommand == 8) {
+                
+                    // Reset the Drone
+                    pub_reset.publish(emp_msg);
+                    std::cout << "Reset Implemented" << std::endl; 
+
+                } else if (nCommand == 9) { 
+               
+                    // Still Constitutes Movement
+                    tak_land_out.takeoff = (uint8_t)0;
+                    tak_land_out.landing = (uint8_t)0;
+                    tak_land_out.move = (uint8_t)1;
+
+                     
+                    // Hover 
+                    twist_msg_out.linear.x = 0;
+                    twist_msg_out.linear.y = 0;
+                    twist_msg_out.linear.z = 0;
+                    twist_msg_out.angular.z = 0;
+              
+                    // Publish this information
+                    pub_tak_land.publish(tak_land_out);
+                    pub_twist.publish(twist_msg_out);
+
+                    std::cout << "Hovering Now" << std::endl; 
+
+
+                } else if (nCommand == 7) {
+
 	    			// Do nothing
 
 	    		} else if (nCommand == 6) {
@@ -161,8 +198,6 @@ int main(int argc, char** argv) {
 				    twist_msg_out.linear.x = 0.25;
 	    			twist_msg_out.linear.y = 0;
 				    twist_msg_out.linear.z = 0;
-				    twist_msg_out.angular.x = 0;
-				    twist_msg_out.angular.y = 0;
 				    twist_msg_out.angular.z = 0.75;
 
 				    // Publish this information
@@ -181,8 +216,6 @@ int main(int argc, char** argv) {
 				    twist_msg_out.linear.x = 0.25;
 	    			twist_msg_out.linear.y = 0;
 				    twist_msg_out.linear.z = 0;
-				    twist_msg_out.angular.x = 0;
-				    twist_msg_out.angular.y = 0;
 				    twist_msg_out.angular.z = -0.75;
 
 				    // Publish this information
@@ -201,13 +234,12 @@ int main(int argc, char** argv) {
 				    twist_msg_out.linear.x = -0.25;
 	    			twist_msg_out.linear.y = 0;
 				    twist_msg_out.linear.z = 0;
-				    twist_msg_out.angular.x = 0;
-				    twist_msg_out.angular.y = 0;
 				    twist_msg_out.angular.z = 0;
 
 				    // Publish this information
 				    pub_tak_land.publish(tak_land_out);
 				    pub_twist.publish(twist_msg_out);
+
 
 	    		}  else if (nCommand == 3) {
 
@@ -218,30 +250,16 @@ int main(int argc, char** argv) {
 	    			tak_land_out.landing = (uint8_t)0;
 	    			tak_land_out.move = (uint8_t)1;
 
-				    twist_msg_out.linear.x = 0.0001;
+				    twist_msg_out.linear.x = 0.25;
 	    			twist_msg_out.linear.y = 0;
 				    twist_msg_out.linear.z = 0;
-				    twist_msg_out.angular.x = 0;
-				    twist_msg_out.angular.y = 0;
 				    twist_msg_out.angular.z = 0;
 
 				    // Publish this information
 				    pub_tak_land.publish(tak_land_out);
 				    pub_twist.publish(twist_msg_out);
 
-				    // Sleep for a bit
-				    ros::Duration(0.5).sleep();
-
-				    // Set back the State and Movement
-				    twist_msg_out.linear.x = 0;
-	    			twist_msg_out.linear.y = 0;
-				    twist_msg_out.linear.z = 0;
-				    twist_msg_out.angular.x = 0;
-				    twist_msg_out.angular.y = 0;
-				    twist_msg_out.angular.z = 0;
-
-				    // Publish Info 2
-				    pub_twist.publish(twist_msg_out);
+                    std::cout << "Moving Forward" << std::endl; 
 
 	    		}  else if (nCommand == 2) {
 

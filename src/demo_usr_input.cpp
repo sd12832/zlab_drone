@@ -14,7 +14,13 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv,"demo_usrInput");
     ros::NodeHandle node;
     ros::Rate loop_rate(50);
-    std_msgs::String msg; 
+    std_msgs::String msg;
+
+    //Debugging 
+    //std::cout << "Started Wait Test" << std::endl;
+    //ros::Duration(30).sleep();
+    //std::cout << "This should be Displayed 30 seconds later" 
+    //                <<std::endl;  
 
     std::cout << "Welcome to Sharan's demo drone fly node." << std::endl 
                         << std::endl;
@@ -28,7 +34,9 @@ int main(int argc, char** argv) {
     std::cout << "5. To Move to the Right: Type in MR <distance in cm>" 
                         << std::endl; 
     std::cout << "6. To Move to the Left: Type in ML <distance in cm>" 
-                        << std::endl << std::endl;  
+                        << std::endl;
+    std::cout << "7. To Reset the Drone: Type in R" <<std::endl
+                        <<std::endl;;  
     std::cout << "TO CLOSE THE NODE TYPE IN 'C'." << std::endl << std::endl; 
     std::cout << "-----------------------------------------------------------";
     
@@ -46,8 +54,19 @@ int main(int argc, char** argv) {
         if ((input[0] == 'C') || (input[0] == 'c')) {
             return 0; 
         } else {
-            msg.data = input;
-            command.publish(msg); 
+            if ((input == "MB") || (input == "MF") || (input == "MR") ||
+                        (input == "ML")) {
+                msg.data = input;
+                command.publish(msg);
+                std::cout << "started move" << std::endl;
+                ros::Duration(2).sleep();
+                msg.data = "H";
+                command.publish(msg);
+                std::cout << "stopped move" << std::endl;
+            } else {
+                msg.data = input;
+                command.publish(msg);          
+            } 
         }
 
     }
