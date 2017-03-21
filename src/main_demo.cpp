@@ -250,7 +250,7 @@ int main(int argc, char** argv) {
 	    			tak_land_out.landing = (uint8_t)0;
 	    			tak_land_out.move = (uint8_t)1;
 
-				    twist_msg_out.linear.x = 0.25;
+				    twist_msg_out.linear.x = 0.10;
 	    			twist_msg_out.linear.y = 0;
 				    twist_msg_out.linear.z = 0;
 				    twist_msg_out.angular.z = 0;

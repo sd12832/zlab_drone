@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
                 msg.data = input;
                 command.publish(msg);
                 std::cout << "started move" << std::endl;
-                ros::Duration(2).sleep();
+                ros::Duration(0.5).sleep();
                 msg.data = "H";
                 command.publish(msg);
                 std::cout << "stopped move" << std::endl;
