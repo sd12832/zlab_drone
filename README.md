@@ -1,7 +1,5 @@
 # ZDrone
 
-![N|Solid](http://www.paperboardpackaging.org/images/default-source/School-Logos/sjsu-primary-mark_web.png?sfvrsn=0)
-
 >““Owning a drone does not a pilot make.” - **Alex Morritt, Impromptu Scribe**
 
 This project was initiated when I was a Project Assistant at the Zero Energy Networks Lab in the Department of Electronic Systems Engineering (DESE) at the Indian Institute of Science (IISc), working on a prototype framework for the combined indoor and outdoor navigation of a Parrot AR.Drone. 
